@@ -1,5 +1,5 @@
 //
-//  Button.swift
+//  TabButton.swift
 //  ToDo
 //
 //  Created by Евгений Таракин on 15.11.2024.
@@ -13,7 +13,7 @@ protocol ButtonDelegate: AnyObject {
     func didSelectButton()
 }
 
-final class Button: UIView {
+final class TabButton: UIView {
     
 //    MARK: - property
 
@@ -22,7 +22,7 @@ final class Button: UIView {
     private lazy var imageView: UIImageView = {
         let imageView = UIImageView()
         imageView.image = UIImage(systemName: "square.and.pencil")
-        imageView.tintColor = .systemYellow
+        imageView.tintColor = Color.yellow
         imageView.contentMode = .scaleAspectFit
         imageView.translatesAutoresizingMaskIntoConstraints = false
         
