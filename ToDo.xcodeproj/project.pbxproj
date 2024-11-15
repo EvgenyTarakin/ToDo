@@ -19,6 +19,9 @@
 		1B4510292CE72DCE00B673A1 /* TaskCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B4510282CE72DCE00B673A1 /* TaskCell.swift */; };
 		1B45102C2CE747E700B673A1 /* Color.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B45102A2CE747E700B673A1 /* Color.swift */; };
 		1B45102E2CE747FE00B673A1 /* UIColor + Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B45102D2CE747FE00B673A1 /* UIColor + Extension.swift */; };
+		1B4510312CE770AD00B673A1 /* UIView + Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B4510302CE770AD00B673A1 /* UIView + Extensions.swift */; };
+		1B4510332CE77C5300B673A1 /* SelectTaskView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B4510322CE77C5200B673A1 /* SelectTaskView.swift */; };
+		1B4510352CE7B3A700B673A1 /* MenuButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B4510342CE7B3A700B673A1 /* MenuButton.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -35,6 +38,9 @@
 		1B4510282CE72DCE00B673A1 /* TaskCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskCell.swift; sourceTree = "<group>"; };
 		1B45102A2CE747E700B673A1 /* Color.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Color.swift; sourceTree = "<group>"; };
 		1B45102D2CE747FE00B673A1 /* UIColor + Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIColor + Extension.swift"; sourceTree = "<group>"; };
+		1B4510302CE770AD00B673A1 /* UIView + Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView + Extensions.swift"; sourceTree = "<group>"; };
+		1B4510322CE77C5200B673A1 /* SelectTaskView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectTaskView.swift; sourceTree = "<group>"; };
+		1B4510342CE7B3A700B673A1 /* MenuButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuButton.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -71,6 +77,7 @@
 				1B159FF22CE71D7C00334CBA /* AppDelegates */,
 				1B45102B2CE747E700B673A1 /* Color */,
 				1B159FF82CE7212E00334CBA /* CustomUI */,
+				1B45102F2CE7709A00B673A1 /* Extensions */,
 				1B159FF32CE71E1200334CBA /* StartApplication */,
 				1B159FF42CE71EB600334CBA /* MainApplication */,
 				1B159FE32CE71D2600334CBA /* Assets.xcassets */,
@@ -110,6 +117,8 @@
 			children = (
 				1B159FF92CE7215000334CBA /* Label.swift */,
 				1B159FFB2CE7219D00334CBA /* TabButton.swift */,
+				1B4510322CE77C5200B673A1 /* SelectTaskView.swift */,
+				1B4510342CE7B3A700B673A1 /* MenuButton.swift */,
 			);
 			path = CustomUI;
 			sourceTree = "<group>";
@@ -143,9 +152,17 @@
 			isa = PBXGroup;
 			children = (
 				1B45102A2CE747E700B673A1 /* Color.swift */,
-				1B45102D2CE747FE00B673A1 /* UIColor + Extension.swift */,
 			);
 			path = Color;
+			sourceTree = "<group>";
+		};
+		1B45102F2CE7709A00B673A1 /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				1B4510302CE770AD00B673A1 /* UIView + Extensions.swift */,
+				1B45102D2CE747FE00B673A1 /* UIColor + Extension.swift */,
+			);
+			path = Extensions;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -225,7 +242,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1B4510312CE770AD00B673A1 /* UIView + Extensions.swift in Sources */,
 				1B45102E2CE747FE00B673A1 /* UIColor + Extension.swift in Sources */,
+				1B4510352CE7B3A700B673A1 /* MenuButton.swift in Sources */,
 				1B159FFC2CE7219D00334CBA /* TabButton.swift in Sources */,
 				1B4510292CE72DCE00B673A1 /* TaskCell.swift in Sources */,
 				1B159FDF2CE71D2400334CBA /* TasksViewController.swift in Sources */,
@@ -233,6 +252,7 @@
 				1B159FFA2CE7215000334CBA /* Label.swift in Sources */,
 				1B45102C2CE747E700B673A1 /* Color.swift in Sources */,
 				1B4510262CE72CF900B673A1 /* DetailTaskViewController.swift in Sources */,
+				1B4510332CE77C5300B673A1 /* SelectTaskView.swift in Sources */,
 				1B159FDD2CE71D2400334CBA /* SceneDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

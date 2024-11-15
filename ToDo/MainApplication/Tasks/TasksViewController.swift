@@ -34,6 +34,13 @@ final class TasksViewController: UIViewController {
         
         return button
     }()
+    
+    private lazy var selectTaskView: SelectTaskView = {
+        let selectTaskView = SelectTaskView()
+        selectTaskView.isHidden = true
+        
+        return selectTaskView
+    }()
 
     // MARK: - ViewController lifecycle
     
@@ -67,7 +74,20 @@ private extension TasksViewController {
         tableView.snp.makeConstraints {
             $0.top.bottom.left.right.equalTo(view.safeAreaLayoutGuide)
         }
+        
+        tabBarController?.view.addSubview(selectTaskView)
+        
+        selectTaskView.snp.makeConstraints {
+            $0.top.bottom.left.right.equalToSuperview()
+        }
     }
+
+}
+
+// MARK: - obj-c
+
+@objc private extension TasksViewController {
+
 }
 
 // MARK: - UITableViewDelegate
@@ -104,7 +124,8 @@ extension TasksViewController: TaskCellDelegate {
     }
     
     func didLongPressCell(index: Int) {
-        
+        let frame = tableView.rectForRow(at: IndexPath(row: index, section: 0))
+        selectTaskView.showSelectTaskView(frame: tableView.convert(frame, to: tableView.superview))
     }
 }
 

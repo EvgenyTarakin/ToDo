@@ -27,7 +27,7 @@ final class TaskCell: UITableViewCell {
     
     private var index = 0
     
-    private var longPressGestureRecognizer = UILongPressGestureRecognizer(target: TaskCell.self, action: #selector(longPressCell))
+    private lazy var longPressGestureRecognizer = UILongPressGestureRecognizer(target: self, action: #selector(longPressCell))
     
     private lazy var checkImageView: UIImageView = {
         let imageView = UIImageView()
