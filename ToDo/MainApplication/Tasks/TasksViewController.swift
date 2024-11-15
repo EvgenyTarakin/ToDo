@@ -38,6 +38,7 @@ final class TasksViewController: UIViewController {
     private lazy var selectTaskView: SelectTaskView = {
         let selectTaskView = SelectTaskView()
         selectTaskView.isHidden = true
+        selectTaskView.delegate = self
         
         return selectTaskView
     }()
@@ -135,5 +136,21 @@ extension TasksViewController: ButtonDelegate {
     func didSelectButton() {
         let controller = DetailTaskViewController()
         navigationController?.pushViewController(controller, animated: true)
+    }
+}
+
+// MARK: - SelectTaskViewDelegate
+
+extension TasksViewController: SelectTaskViewDelegate {
+    func didSelectEditButton() {
+        
+    }
+    
+    func didSelectShareButton() {
+        
+    }
+    
+    func didSelectDeleteButton() {
+        
     }
 }

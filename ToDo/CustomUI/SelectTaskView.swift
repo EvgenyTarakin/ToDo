@@ -106,6 +106,8 @@ final class SelectTaskView: UIView {
         return backView
     }()
     
+    // MARK: - Menu
+    
     private lazy var buttonStackView: UIStackView = {
         let stackView = UIStackView(arrangedSubviews: [editMenuButton, shareMenuButton, deleteMenuButton])
         stackView.backgroundColor = Color.clear
@@ -162,6 +164,12 @@ final class SelectTaskView: UIView {
 // MARK: - func
 
 extension SelectTaskView {
+    func configurate(title: String, description: String, date: String) {
+        titleTaskLabel.text = title
+        descriptionTaskLabel.text = description
+        dateTaskLabel.text = date
+    }
+    
     func showSelectTaskView(frame: CGRect) {
         if !isAnimated {
             isHidden = false
@@ -214,24 +222,16 @@ private extension SelectTaskView {
             self.isHidden = true
         })
     }
-    
-    func tapEditButton() {
-        delegate?.didSelectEditButton()
-    }
-    
-    func tapShareButton() {
-        delegate?.didSelectShareButton()
-    }
-    
-    func tapDeleteButton() {
-        delegate?.didSelectDeleteButton()
-    }
 }
 
 // MARK: - MenuButtonDelegate
 
 extension SelectTaskView: MenuButtonDelegate {
     func didSelectButton(type: MenuButtonType) {
-        
+        switch type {
+        case .edit: delegate?.didSelectEditButton()
+        case .share: delegate?.didSelectShareButton()
+        case .delete: delegate?.didSelectDeleteButton()
+        }
     }
 }
