@@ -8,9 +8,23 @@
 import UIKit
 import SnapKit
 
+// MARK: - protocols
+
+protocol TasksPresenterToViewProtocol: AnyObject {
+    func updateTableView(_ todo: [Todo])
+}
+
+protocol TasksRouterToViewProtocol: AnyObject {
+    
+}
+
 final class TasksViewController: UIViewController {
     
     // MARK: - property
+    
+    var presenter: TasksViewToPresenterProtocol?
+    
+    private var tasks: [Todo] = []
     
     private lazy var tableView: UITableView = {
         let tableView = UITableView()
@@ -68,8 +82,6 @@ private extension TasksViewController {
         
         view.backgroundColor = Color.black
         
-        countLabel.configurate(10)
-        
         view.addSubview(tableView)
         
         tableView.snp.makeConstraints {
@@ -81,6 +93,8 @@ private extension TasksViewController {
         selectTaskView.snp.makeConstraints {
             $0.top.bottom.left.right.equalToSuperview()
         }
+        
+        presenter?.loadTasks()
     }
 
 }
@@ -101,16 +115,18 @@ extension TasksViewController: UITableViewDelegate {
 
 extension TasksViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 10
+        return tasks.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: TaskCell.reuseIdentifier, for: indexPath) as? TaskCell
         else { return UITableViewCell() }
+        let task = tasks[indexPath.row]
         cell.configurate(index: indexPath.row,
-                         title: "test",
-                         description: "testtesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttest",
-                         date: "test")
+                         title: task.todo,
+                         description: task.todo,
+                         date: "test",
+                         isCompleted: task.completed)
         cell.delegate = self
         
         return cell
@@ -121,7 +137,8 @@ extension TasksViewController: UITableViewDataSource {
 
 extension TasksViewController: TaskCellDelegate {
     func didTapCheckButton(index: Int) {
-        
+        tasks[index].completed.toggle()
+        tableView.reloadData()
     }
     
     func didLongPressCell(index: Int) {
@@ -152,5 +169,21 @@ extension TasksViewController: SelectTaskViewDelegate {
     
     func didSelectDeleteButton() {
         
+    }
+}
+
+// MARK: - TasksRouterToViewProtocol
+
+extension TasksViewController: TasksRouterToViewProtocol {
+
+}
+
+// MARK: - TasksPresenterToViewProtocol
+
+extension TasksViewController: TasksPresenterToViewProtocol {
+    func updateTableView(_ todo: [Todo]) {
+        tasks = todo
+        countLabel.configurate(tasks.count)
+        tableView.reloadData()
     }
 }

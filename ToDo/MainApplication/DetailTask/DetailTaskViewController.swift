@@ -7,7 +7,21 @@
 
 import UIKit
 
+// MARK: - protocols
+
+protocol DetailTaskPresenterToViewProtocol: AnyObject {
+    
+}
+
+protocol DetailTaskRouterToViewProtocol: AnyObject {
+    
+}
+
 final class DetailTaskViewController: UIViewController {
+    
+    // MARK: - property
+    
+    var presenter: DetailTaskViewToPresenterProtocol!
 
     // MARK: - ViewController lifecycle
     
@@ -24,4 +38,12 @@ private extension DetailTaskViewController {
     func commonInit() {
         
     }
+}
+
+extension DetailTaskViewController: DetailTaskRouterToViewProtocol {
+
+}
+
+extension DetailTaskViewController: DetailTaskPresenterToViewProtocol {
+
 }
