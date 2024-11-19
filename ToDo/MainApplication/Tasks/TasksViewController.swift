@@ -12,6 +12,9 @@ import SnapKit
 
 protocol TasksPresenterToViewProtocol: AnyObject {
     func updateTableView(_ todo: [Todo])
+    func updateCell(for index: Int)
+    func showTaskWithMenu(for index: Int)
+    func deleteWithAnimatecell(for index: Int)
 }
 
 protocol TasksRouterToViewProtocol: AnyObject {
@@ -72,6 +75,8 @@ private extension TasksViewController {
     func commonInit() {
         title = "Задачи"
         
+        view.backgroundColor = Color.black
+        
         tabBarController?.tabBar.isHidden = false
         tabBarController?.tabBar.subviews.forEach {
             $0.removeFromSuperview()
@@ -79,8 +84,6 @@ private extension TasksViewController {
 
         tabBarController?.tabBar.addSubview(countLabel)
         tabBarController?.tabBar.addSubview(addNewFolderButton)
-        
-        view.backgroundColor = Color.black
         
         view.addSubview(tableView)
         
@@ -125,7 +128,7 @@ extension TasksViewController: UITableViewDataSource {
         cell.configurate(index: indexPath.row,
                          title: task.todo,
                          description: task.todo,
-                         date: "test",
+                         date: task.date,
                          isCompleted: task.completed)
         cell.delegate = self
         
@@ -137,13 +140,11 @@ extension TasksViewController: UITableViewDataSource {
 
 extension TasksViewController: TaskCellDelegate {
     func didTapCheckButton(index: Int) {
-        tasks[index].completed.toggle()
-        tableView.reloadData()
+        presenter?.updateTask(for: index)
     }
     
     func didLongPressCell(index: Int) {
-        let frame = tableView.rectForRow(at: IndexPath(row: index, section: 0))
-        selectTaskView.showSelectTaskView(frame: tableView.convert(frame, to: tableView.superview))
+        presenter?.longPressTask(for: index)
     }
 }
 
@@ -168,7 +169,7 @@ extension TasksViewController: SelectTaskViewDelegate {
     }
     
     func didSelectDeleteButton() {
-        
+        presenter?.deleteTask()
     }
 }
 
@@ -184,6 +185,27 @@ extension TasksViewController: TasksPresenterToViewProtocol {
     func updateTableView(_ todo: [Todo]) {
         tasks = todo
         countLabel.configurate(tasks.count)
+        tableView.reloadData()
+    }
+    
+    func updateCell(for index: Int) {
+        tasks[index].completed.toggle()
+        tableView.reloadRows(at: [IndexPath(row: index, section: 0)], with: .automatic)
+    }
+    
+    func showTaskWithMenu(for index: Int) {
+        let task = tasks[index]
+        selectTaskView.configurate(title: task.todo, description: task.todo, date: task.date)
+        let frame = tableView.rectForRow(at: IndexPath(row: index, section: 0))
+        selectTaskView.showSelectTaskView(frame: tableView.convert(frame, to: tableView.superview))
+    }
+    
+    func deleteWithAnimatecell(for index: Int) {
+        tasks.remove(at: index)
+        countLabel.configurate(tasks.count)
+        tableView.beginUpdates()
+        tableView.deleteRows(at: [IndexPath(row: index, section: 0)], with: .left)
+        tableView.endUpdates()
         tableView.reloadData()
     }
 }

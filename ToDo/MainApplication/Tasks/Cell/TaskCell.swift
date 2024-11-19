@@ -83,7 +83,7 @@ final class TaskCell: UITableViewCell {
     private lazy var dateLabel: UILabel = {
         let label = UILabel()
         label.font = .systemFont(ofSize: 12, weight: .regular)
-        label.textColor = Color.grayText
+        label.textColor = Color.grayDoneText
         label.numberOfLines = 1
         
         return label
@@ -122,11 +122,20 @@ final class TaskCell: UITableViewCell {
 // MARK: - func
 
 extension TaskCell {
-    func configurate(index: Int, title: String, description: String, date: String, isCompleted: Bool = false) {
+    func configurate(index: Int, title: String, description: String, date: Date, isCompleted: Bool = false) {
         self.index = index
-        titleLabel.text = title
+        
+        if isCompleted {
+            titleLabel.attributedText = title.strikeThrough()
+        } else {
+            titleLabel.attributedText = title.deleteStrikeThrough()
+        }
+        titleLabel.textColor = isCompleted ? Color.grayDoneText : Color.grayProgressText
+        
         descriptionLabel.text = description
-        dateLabel.text = date
+        descriptionLabel.textColor = isCompleted ? Color.grayDoneText : Color.grayProgressText
+        dateLabel.text = date.getStringDate()
+        
         checkImageView.image = UIImage(named: isCompleted ? "check.circle" : "circle")
     }
 }

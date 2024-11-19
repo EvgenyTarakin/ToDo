@@ -18,7 +18,8 @@ struct Color {
     // MARK: - gray
     
     static var gray: UIColor { return UIColor(hex: "4D555E") }
-    static var grayText: UIColor { return UIColor(hex: "F4F4F4") }
+    static var grayProgressText: UIColor { return UIColor(hex: "F4F4F4") }
+    static var grayDoneText: UIColor { return UIColor(hex: "7C7C7C") }
     static var graySelectTask: UIColor { return UIColor(hex: "272729")}
     static var grayMenuButton: UIColor { return UIColor(hex: "EDEDED", alpha: 0.8) }
     static var graySeparatorMenu: UIColor { return UIColor(hex: "4D555E", alpha: 0.5) }

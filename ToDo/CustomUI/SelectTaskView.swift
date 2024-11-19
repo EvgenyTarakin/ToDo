@@ -63,9 +63,8 @@ final class SelectTaskView: UIView {
     
     private lazy var titleTaskLabel: UILabel = {
         let label = UILabel()
-        label.text = "Title"
         label.font = .systemFont(ofSize: 16, weight: .medium)
-        label.textColor = .white
+        label.textColor = Color.grayProgressText
         label.numberOfLines = 1
         
         return label
@@ -73,9 +72,8 @@ final class SelectTaskView: UIView {
     
     private lazy var descriptionTaskLabel: UILabel = {
         let label = UILabel()
-        label.text = "Title"
         label.font = .systemFont(ofSize: 12, weight: .regular)
-        label.textColor = .white
+        label.textColor = Color.grayProgressText
         label.numberOfLines = 2
         
         return label
@@ -83,9 +81,8 @@ final class SelectTaskView: UIView {
     
     private lazy var dateTaskLabel: UILabel = {
         let label = UILabel()
-        label.text = "Title"
         label.font = .systemFont(ofSize: 12, weight: .regular)
-        label.textColor = Color.grayText
+        label.textColor = Color.grayDoneText
         label.numberOfLines = 1
         
         return label
@@ -164,10 +161,10 @@ final class SelectTaskView: UIView {
 // MARK: - func
 
 extension SelectTaskView {
-    func configurate(title: String, description: String, date: String) {
+    func configurate(title: String, description: String, date: Date) {
         titleTaskLabel.text = title
         descriptionTaskLabel.text = description
-        dateTaskLabel.text = date
+        dateTaskLabel.text = date.getStringDate()
     }
     
     func showSelectTaskView(frame: CGRect) {
@@ -228,10 +225,18 @@ private extension SelectTaskView {
 
 extension SelectTaskView: MenuButtonDelegate {
     func didSelectButton(type: MenuButtonType) {
-        switch type {
-        case .edit: delegate?.didSelectEditButton()
-        case .share: delegate?.didSelectShareButton()
-        case .delete: delegate?.didSelectDeleteButton()
-        }
+        buttonsBackView.isHidden = true
+        isAnimated = false
+        UIView.animate(withDuration: 0.15, animations: {
+            self.backView.frame.origin.y = self.startFrame?.origin.y ?? 0
+        }, completion: { _ in
+            self.isHidden = true
+            
+            switch type {
+            case .edit: self.delegate?.didSelectEditButton()
+            case .share: self.delegate?.didSelectShareButton()
+            case .delete: self.delegate?.didSelectDeleteButton()
+            }
+        })
     }
 }
