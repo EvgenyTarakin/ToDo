@@ -10,6 +10,9 @@ import UIKit
 // MARK: - protocols
 
 protocol TasksViewToPresenterProtocol: AnyObject {
+    func getTask(for index: Int) -> Todo
+    func getTasks() -> [Todo]
+    func getCountTasks() -> Int
     func loadTasks()
     func longPressTask(for index: Int)
     func updateTask(for index: Int)
@@ -30,11 +33,25 @@ class TasksPresenter {
     
     // MARK: - private property
     
+    private var tasks: [Todo] = []
+    
     private var selectedIndex = 0
     
 }
 
 extension TasksPresenter: TasksViewToPresenterProtocol {
+    func getTask(for index: Int) -> Todo {
+        return tasks[index] 
+    }
+    
+    func getTasks() -> [Todo] {
+        return tasks
+    }
+    
+    func getCountTasks() -> Int {
+        return tasks.count
+    }
+    
     func loadTasks() {
         interactor?.fetchTasks()
     }
@@ -45,16 +62,21 @@ extension TasksPresenter: TasksViewToPresenterProtocol {
     }
     
     func updateTask(for index: Int) {
+        tasks[index].completed.toggle()
         view?.updateCell(for: index)
     }
     
     func deleteTask() {
+        tasks.remove(at: selectedIndex)
         view?.deleteWithAnimatecell(for: selectedIndex)
+        view?.updateCountLabel()
     }
 }
 
 extension TasksPresenter: TasksInteractorToPresenterProtocol {
     func didFetchTasks(_ tasks: [Todo]) {
-        view?.updateTableView(tasks)
+        self.tasks = tasks
+        view?.updateTableView()
+        view?.updateCountLabel()
     }
 }

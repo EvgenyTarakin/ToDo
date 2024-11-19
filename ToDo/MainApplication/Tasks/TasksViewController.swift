@@ -11,7 +11,8 @@ import SnapKit
 // MARK: - protocols
 
 protocol TasksPresenterToViewProtocol: AnyObject {
-    func updateTableView(_ todo: [Todo])
+    func updateTableView()
+    func updateCountLabel()
     func updateCell(for index: Int)
     func showTaskWithMenu(for index: Int)
     func deleteWithAnimatecell(for index: Int)
@@ -27,7 +28,19 @@ final class TasksViewController: UIViewController {
     
     var presenter: TasksViewToPresenterProtocol?
     
-    private var tasks: [Todo] = []
+    private lazy var tap = UITapGestureRecognizer(target: self, action: #selector(tapOnView))
+    
+    private lazy var textField: UITextField = {
+        let textField = UITextField()
+        textField.backgroundColor = Color.graySelectTask
+        textField.layer.cornerRadius = 10
+        textField.returnKeyType = .search
+        textField.placeholder = "Search"
+        textField.setGlassAndMicroImage()
+        textField.delegate = self
+        
+        return textField
+    }()
     
     private lazy var tableView: UITableView = {
         let tableView = UITableView()
@@ -65,6 +78,7 @@ final class TasksViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         commonInit()
+        presenter?.loadTasks()
     }
 
 }
@@ -85,10 +99,18 @@ private extension TasksViewController {
         tabBarController?.tabBar.addSubview(countLabel)
         tabBarController?.tabBar.addSubview(addNewFolderButton)
         
+        view.addGestureRecognizer(tap)
+        view.addSubview(textField)
         view.addSubview(tableView)
         
+        textField.snp.makeConstraints {
+            $0.top.equalTo(view.safeAreaLayoutGuide)
+            $0.left.right.equalTo(view.safeAreaLayoutGuide).inset(20)
+            $0.height.equalTo(36)
+        }
         tableView.snp.makeConstraints {
-            $0.top.bottom.left.right.equalTo(view.safeAreaLayoutGuide)
+            $0.top.equalTo(textField.snp.bottom).inset(-16)
+            $0.bottom.left.right.equalTo(view.safeAreaLayoutGuide)
         }
         
         tabBarController?.view.addSubview(selectTaskView)
@@ -96,8 +118,6 @@ private extension TasksViewController {
         selectTaskView.snp.makeConstraints {
             $0.top.bottom.left.right.equalToSuperview()
         }
-        
-        presenter?.loadTasks()
     }
 
 }
@@ -105,7 +125,16 @@ private extension TasksViewController {
 // MARK: - obj-c
 
 @objc private extension TasksViewController {
+    func tapOnView() {
+        textField.resignFirstResponder()
+    }
+}
 
+extension TasksViewController: UITextFieldDelegate {
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        textField.resignFirstResponder()
+        return true
+    }
 }
 
 // MARK: - UITableViewDelegate
@@ -118,13 +147,13 @@ extension TasksViewController: UITableViewDelegate {
 
 extension TasksViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return tasks.count
+        return presenter?.getCountTasks() ?? 0
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: TaskCell.reuseIdentifier, for: indexPath) as? TaskCell
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: TaskCell.reuseIdentifier, for: indexPath) as? TaskCell,
+              let task = presenter?.getTask(for: indexPath.row)
         else { return UITableViewCell() }
-        let task = tasks[indexPath.row]
         cell.configurate(index: indexPath.row,
                          title: task.todo,
                          description: task.todo,
@@ -182,27 +211,26 @@ extension TasksViewController: TasksRouterToViewProtocol {
 // MARK: - TasksPresenterToViewProtocol
 
 extension TasksViewController: TasksPresenterToViewProtocol {
-    func updateTableView(_ todo: [Todo]) {
-        tasks = todo
-        countLabel.configurate(tasks.count)
+    func updateTableView() {
         tableView.reloadData()
     }
     
+    func updateCountLabel() {
+        countLabel.configurate(presenter?.getCountTasks() ?? 0)
+    }
+    
     func updateCell(for index: Int) {
-        tasks[index].completed.toggle()
         tableView.reloadRows(at: [IndexPath(row: index, section: 0)], with: .automatic)
     }
     
     func showTaskWithMenu(for index: Int) {
-        let task = tasks[index]
+        guard let task = presenter?.getTask(for: index) else { return }
         selectTaskView.configurate(title: task.todo, description: task.todo, date: task.date)
         let frame = tableView.rectForRow(at: IndexPath(row: index, section: 0))
         selectTaskView.showSelectTaskView(frame: tableView.convert(frame, to: tableView.superview))
     }
     
     func deleteWithAnimatecell(for index: Int) {
-        tasks.remove(at: index)
-        countLabel.configurate(tasks.count)
         tableView.beginUpdates()
         tableView.deleteRows(at: [IndexPath(row: index, section: 0)], with: .left)
         tableView.endUpdates()
