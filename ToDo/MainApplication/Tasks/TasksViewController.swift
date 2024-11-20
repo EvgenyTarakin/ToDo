@@ -146,14 +146,17 @@ extension TasksViewController: UITableViewDataSource {
 
 extension TasksViewController: TaskCellDelegate {
     func didTapCell(index: Int) {
+        view.endEditing(true)
         presenter?.didSelectCell(for: index)
     }
     
     func didTapCheckButton(index: Int) {
+        view.endEditing(true)
         presenter?.updateTask(for: index)
     }
     
     func didLongPressCell(index: Int) {
+        view.endEditing(true)
         presenter?.longPressTask(for: index)
     }
 }

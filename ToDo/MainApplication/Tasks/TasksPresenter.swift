@@ -84,7 +84,7 @@ extension TasksPresenter: TasksViewToPresenterProtocol {
     }
     
     func tapEditTask() {
-        router?.openDetail(for: getTask(for: selectedIndex), index: getCountTasks())
+        router?.openDetail(for: getTask(for: selectedIndex), index: selectedIndex)
     }
     
     func tapDeleteTask() {
