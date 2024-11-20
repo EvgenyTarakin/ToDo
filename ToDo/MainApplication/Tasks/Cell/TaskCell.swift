@@ -11,6 +11,7 @@ import SnapKit
 // MARK: - protocol
 
 protocol TaskCellDelegate: AnyObject {
+    func didTapCell(index: Int)
     func didTapCheckButton(index: Int)
     func didLongPressCell(index: Int)
 }
@@ -26,6 +27,8 @@ final class TaskCell: UITableViewCell {
     // MARK: - private property
     
     private var index = 0
+    
+    private lazy var tap = UITapGestureRecognizer(target: self, action: #selector(tapCell))
     
     private lazy var longPressGestureRecognizer = UILongPressGestureRecognizer(target: self, action: #selector(longPressCell))
     
@@ -146,6 +149,7 @@ private extension TaskCell {
     func commonInit() {
         selectionStyle = .none
         
+        contentView.addGestureRecognizer(tap)
         contentView.addGestureRecognizer(longPressGestureRecognizer)
         
         contentView.addSubview(checkImageView)
@@ -179,6 +183,10 @@ private extension TaskCell {
 // MARK: - obj-c
 
 @objc private extension TaskCell {
+    func tapCell() {
+        delegate?.didTapCell(index: index)
+    }
+    
     func tapCheckButton() {
         delegate?.didTapCheckButton(index: index)
     }

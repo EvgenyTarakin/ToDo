@@ -7,7 +7,7 @@
 
 import UIKit
 
-class DetailTaskConfigurator {
+final class DetailTaskConfigurator {
     
     func configurate() -> UIViewController {
         let view = DetailTaskViewController()

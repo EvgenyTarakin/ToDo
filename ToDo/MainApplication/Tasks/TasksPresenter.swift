@@ -16,14 +16,17 @@ protocol TasksViewToPresenterProtocol: AnyObject {
     func filterTask(for text: String)
     func longPressTask(for index: Int)
     func updateTask(for index: Int)
+    func didSelectCell(for index: Int)
+    func editTask()
     func deleteTask()
+    func addTask()
 }
 
 protocol TasksInteractorToPresenterProtocol: AnyObject {
     func didFetchTasks(_ tasks: [Todo])
 }
 
-class TasksPresenter {
+final class TasksPresenter {
     
     // MARK: - property
     
@@ -39,6 +42,8 @@ class TasksPresenter {
     private var selectedIndex = 0
     
 }
+
+// MARK: - TasksViewToPresenterProtocol
 
 extension TasksPresenter: TasksViewToPresenterProtocol {
     func getTask(for index: Int) -> Todo {
@@ -77,11 +82,25 @@ extension TasksPresenter: TasksViewToPresenterProtocol {
         view?.updateCell(for: index)
     }
     
+    func didSelectCell(for index: Int) {
+        router?.openDetail(for: getTask(for: index))
+    }
+    
+    func addTask() {
+        router?.openNewTask()
+    }
+    
+    func editTask() {
+        router?.openDetail(for: getTask(for: selectedIndex))
+    }
+    
     func deleteTask() {
         tasks.remove(at: selectedIndex)
         view?.deleteWithAnimatecell(for: selectedIndex)
     }
 }
+
+// MARK: - TasksInteractorToPresenterProtocol
 
 extension TasksPresenter: TasksInteractorToPresenterProtocol {
     func didFetchTasks(_ tasks: [Todo]) {

@@ -10,15 +10,26 @@ import UIKit
 // MARK: - protocol
 
 protocol TasksPresenterToRouterProtocol: AnyObject {
-    
+    func openNewTask()
+    func openDetail(for task: Todo)
 }
 
-class TasksRouter {
+final class TasksRouter {
     
     weak var view: TasksRouterToViewProtocol?
     
 }
 
-extension TasksRouter: TasksPresenterToRouterProtocol {
+// MARK: - TasksPresenterToRouterProtocol
 
+extension TasksRouter: TasksPresenterToRouterProtocol {
+    func openNewTask() {
+        let controller = DetailTaskConfigurator().configurate()
+        view?.navgate(to: controller)
+    }
+    
+    func openDetail(for task: Todo) {
+        let controller = DetailTaskConfigurator().configurate()
+        view?.navgate(to: controller)
+    }
 }

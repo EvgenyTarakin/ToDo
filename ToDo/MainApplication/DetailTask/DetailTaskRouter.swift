@@ -13,7 +13,7 @@ protocol DetailTaskPresenterToRouterProtocol: AnyObject {
     
 }
 
-class DetailTaskRouter {
+final class DetailTaskRouter {
     
     weak var view: DetailTaskRouterToViewProtocol!
     

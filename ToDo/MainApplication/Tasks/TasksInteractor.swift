@@ -14,11 +14,13 @@ protocol TasksPresenterToInteractorProtocol: AnyObject {
     func fetchTasks()
 }
 
-class TasksInteractor {
+final class TasksInteractor {
     
     weak var presenter: TasksInteractorToPresenterProtocol?
 
 }
+
+// MARK: - TasksPresenterToInteractorProtocol
 
 extension TasksInteractor: TasksPresenterToInteractorProtocol {
     func fetchTasks() {

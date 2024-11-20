@@ -18,7 +18,7 @@ protocol TasksPresenterToViewProtocol: AnyObject {
 }
 
 protocol TasksRouterToViewProtocol: AnyObject {
-    
+    func navgate(to controller: UIViewController)
 }
 
 final class TasksViewController: UIViewController {
@@ -79,6 +79,11 @@ final class TasksViewController: UIViewController {
         commonInit()
         presenter?.loadTasks()
     }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        setupTabBar()
+    }
 
 }
 
@@ -89,14 +94,6 @@ private extension TasksViewController {
         title = "Задачи"
         
         view.backgroundColor = Color.black
-        
-        tabBarController?.tabBar.isHidden = false
-        tabBarController?.tabBar.subviews.forEach {
-            $0.removeFromSuperview()
-        }
-
-        tabBarController?.tabBar.addSubview(countLabel)
-        tabBarController?.tabBar.addSubview(addNewFolderButton)
         
         view.addGestureRecognizer(tap)
         view.addSubview(textField)
@@ -119,6 +116,20 @@ private extension TasksViewController {
         }
     }
 
+    private func setupTabBar() {
+        tabBarController?.tabBar.isHidden = false
+        tabBarController?.tabBar.subviews.forEach {
+            $0.removeFromSuperview()
+        }
+        
+        let backTabBarView = UIView()
+        backTabBarView.frame = tabBarController?.tabBar.bounds ?? CGRect.zero
+        backTabBarView.setBlurEffect()
+        
+        tabBarController?.tabBar.addSubview(backTabBarView)
+        tabBarController?.tabBar.addSubview(countLabel)
+        tabBarController?.tabBar.addSubview(addNewFolderButton)
+    }
 }
 
 // MARK: - obj-c
@@ -148,9 +159,7 @@ extension TasksViewController: UITextFieldDelegate {
 
 // MARK: - UITableViewDelegate
 
-extension TasksViewController: UITableViewDelegate {
-    
-}
+extension TasksViewController: UITableViewDelegate {}
 
 // MARK: - UITableViewDataSource
 
@@ -177,6 +186,10 @@ extension TasksViewController: UITableViewDataSource {
 // MARK: - TaskCellDelegate
 
 extension TasksViewController: TaskCellDelegate {
+    func didTapCell(index: Int) {
+        presenter?.didSelectCell(for: index)
+    }
+    
     func didTapCheckButton(index: Int) {
         presenter?.updateTask(for: index)
     }
@@ -190,8 +203,7 @@ extension TasksViewController: TaskCellDelegate {
 
 extension TasksViewController: ButtonDelegate {
     func didSelectButton() {
-        let controller = DetailTaskViewController()
-        navigationController?.pushViewController(controller, animated: true)
+        presenter?.addTask()
     }
 }
 
@@ -199,7 +211,7 @@ extension TasksViewController: ButtonDelegate {
 
 extension TasksViewController: SelectTaskViewDelegate {
     func didSelectEditButton() {
-        
+        presenter?.editTask()
     }
     
     func didSelectShareButton() {
@@ -214,7 +226,9 @@ extension TasksViewController: SelectTaskViewDelegate {
 // MARK: - TasksRouterToViewProtocol
 
 extension TasksViewController: TasksRouterToViewProtocol {
-
+    func navgate(to controller: UIViewController) {
+        navigationController?.pushViewController(controller, animated: true)
+    }
 }
 
 // MARK: - TasksPresenterToViewProtocol

@@ -7,7 +7,7 @@
 
 import UIKit
 
-class TasksConfigurator {
+final class TasksConfigurator {
     
     func configurate() -> UIViewController {
         let view = TasksViewController()

@@ -36,13 +36,21 @@ final class DetailTaskViewController: UIViewController {
 
 private extension DetailTaskViewController {
     func commonInit() {
+        view.backgroundColor = Color.black
         
+        navigationController?.navigationBar.tintColor = Color.yellow
+        
+        tabBarController?.tabBar.isHidden = true
     }
 }
+
+// MARK: - DetailTaskRouterToViewProtocol
 
 extension DetailTaskViewController: DetailTaskRouterToViewProtocol {
 
 }
+
+// MARK: - DetailTaskPresenterToViewProtocol
 
 extension DetailTaskViewController: DetailTaskPresenterToViewProtocol {
 
