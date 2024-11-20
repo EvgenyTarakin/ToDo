@@ -12,7 +12,6 @@ import SnapKit
 
 protocol TasksPresenterToViewProtocol: AnyObject {
     func updateTableView()
-    func updateCountLabel()
     func updateCell(for index: Int)
     func showTaskWithMenu(for index: Int)
     func deleteWithAnimatecell(for index: Int)
@@ -135,6 +134,16 @@ extension TasksViewController: UITextFieldDelegate {
         textField.resignFirstResponder()
         return true
     }
+    
+    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+        var searchText = (textField.text ?? "") + string
+        if string.isEmpty {
+            searchText.removeLast()
+        }
+        presenter?.filterTask(for: searchText)
+        
+        return true
+    }
 }
 
 // MARK: - UITableViewDelegate
@@ -212,11 +221,8 @@ extension TasksViewController: TasksRouterToViewProtocol {
 
 extension TasksViewController: TasksPresenterToViewProtocol {
     func updateTableView() {
-        tableView.reloadData()
-    }
-    
-    func updateCountLabel() {
         countLabel.configurate(presenter?.getCountTasks() ?? 0)
+        tableView.reloadData()
     }
     
     func updateCell(for index: Int) {
@@ -234,6 +240,6 @@ extension TasksViewController: TasksPresenterToViewProtocol {
         tableView.beginUpdates()
         tableView.deleteRows(at: [IndexPath(row: index, section: 0)], with: .left)
         tableView.endUpdates()
-        tableView.reloadData()
+        updateTableView()
     }
 }
