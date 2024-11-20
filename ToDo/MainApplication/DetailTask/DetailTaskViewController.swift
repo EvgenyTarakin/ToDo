@@ -12,7 +12,7 @@ import SnapKit
 
 protocol DetailTaskPresenterToViewProtocol: AnyObject {
     func commonInit()
-    func setupTask(_ task: TaskModel)
+    func setupTask(_ task: TaskModel?)
 }
 
 protocol DetailTaskRouterToViewProtocol: AnyObject {
@@ -29,7 +29,7 @@ final class DetailTaskViewController: UIViewController {
     
     private lazy var tap = UITapGestureRecognizer(target: self, action: #selector(tapOnView))
     
-    private lazy var textField: UITextField = {
+    private lazy var titleTextField: UITextField = {
         let textField = UITextField()
         textField.backgroundColor = Color.clear
         textField.returnKeyType = .continue
@@ -61,6 +61,12 @@ final class DetailTaskViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         presenter?.viewDidLoad()
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        presenter?.viewDidDisappear(title: titleTextField.text ?? "",
+                                    description: textView.text)
     }
 
 }
@@ -101,17 +107,17 @@ extension DetailTaskViewController: DetailTaskPresenterToViewProtocol {
         
         view.addGestureRecognizer(tap)
         
-        view.addSubview(textField)
+        view.addSubview(titleTextField)
         view.addSubview(dateLabel)
         view.addSubview(textView)
         
-        textField.snp.makeConstraints {
+        titleTextField.snp.makeConstraints {
             $0.top.equalTo(view.safeAreaLayoutGuide).inset(8)
             $0.left.right.equalToSuperview().inset(20)
             $0.height.equalTo(42)
         }
         dateLabel.snp.makeConstraints {
-            $0.top.equalTo(textField.snp.bottom).inset(-8)
+            $0.top.equalTo(titleTextField.snp.bottom).inset(-8)
             $0.left.right.equalToSuperview().inset(20)
             $0.height.equalTo(16)
         }
@@ -122,11 +128,10 @@ extension DetailTaskViewController: DetailTaskPresenterToViewProtocol {
         }
     }
     
-    func setupTask(_ task: TaskModel) {
-        commonInit()
-        textField.text = task.todo
-        dateLabel.text = task.date?.getStringDate()
-        textView.text = task.todo
+    func setupTask(_ task: TaskModel?) {
+        titleTextField.text = task == nil ? "Новая задача" : task?.todo
+        dateLabel.text = task == nil ? Date().getStringDate() : task?.date?.getStringDate()
+        textView.text = task == nil ? "Новая задача" : task?.descriptions
     }
 }
 

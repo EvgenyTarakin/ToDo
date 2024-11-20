@@ -10,8 +10,8 @@ import UIKit
 // MARK: - protocol
 
 protocol TasksPresenterToRouterProtocol: AnyObject {
-    func openNewTask()
-    func openDetail(for task: TaskModel)
+    func openNewTask(index: Int)
+    func openDetail(for task: TaskModel, index: Int)
 }
 
 final class TasksRouter {
@@ -23,13 +23,13 @@ final class TasksRouter {
 // MARK: - TasksPresenterToRouterProtocol
 
 extension TasksRouter: TasksPresenterToRouterProtocol {
-    func openNewTask() {
-        let controller = DetailTaskConfigurator().configurate()
+    func openNewTask(index: Int) {
+        let controller = DetailTaskConfigurator().configurate(index: index, task: nil)
         view?.navgate(to: controller)
     }
     
-    func openDetail(for task: TaskModel) {
-        let controller = DetailTaskConfigurator().configurate(task: task)
+    func openDetail(for task: TaskModel, index: Int) {
+        let controller = DetailTaskConfigurator().configurate(index: index, task: task)
         view?.navgate(to: controller)
     }
 }

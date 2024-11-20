@@ -59,6 +59,7 @@ extension TasksPresenter: TasksViewToPresenterProtocol {
     
     func viewDidAppear() {
         view?.setupTabBar()
+        interactor?.fetchTasksAfterUpdates()
     }
     
     func searchTasks(for text: String) {
@@ -75,15 +76,15 @@ extension TasksPresenter: TasksViewToPresenterProtocol {
     }
     
     func didSelectCell(for index: Int) {
-        router?.openDetail(for: getTask(for: index))
+        router?.openDetail(for: getTask(for: index), index: index)
     }
     
     func addTask() {
-        router?.openNewTask()
+        router?.openNewTask(index: getCountTasks())
     }
     
     func tapEditTask() {
-        router?.openDetail(for: getTask(for: selectedIndex))
+        router?.openDetail(for: getTask(for: selectedIndex), index: getCountTasks())
     }
     
     func tapDeleteTask() {

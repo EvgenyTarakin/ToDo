@@ -62,6 +62,21 @@ final class DataManager: Hashable {
         }
     }
     
+    func updateInformationData(index: Int, title: String, description: String) {
+        let fetchRequest: NSFetchRequest<TaskModel> = TaskModel.fetchRequest()
+        if let objects = try? context.fetch(fetchRequest) {
+            let object = objects[index]
+            object.todo = title
+            object.descriptions = description
+        }
+        
+        do {
+            try context.save()
+        } catch let error as NSError {
+            print(error.localizedDescription)
+        }
+    }
+    
     func deleteData(index: Int) {
         let fetchRequest: NSFetchRequest<TaskModel> = TaskModel.fetchRequest()
         if let objects = try? context.fetch(fetchRequest) {
@@ -73,10 +88,6 @@ final class DataManager: Hashable {
         } catch let error as NSError {
             print(error.localizedDescription)
         }
-    }
-    
-    func filterData(text: String) {
-        
     }
     
     func getDatas() -> [TaskModel] {

@@ -11,10 +11,11 @@ import UIKit
 
 protocol DetailTaskViewToPresenterProtocol: AnyObject {
     func viewDidLoad()
+    func viewDidDisappear(title: String, description: String)
 }
 
 protocol DetailTaskInteractorToPresenterProtocol: AnyObject {
-
+    func didFetchTask(task: TaskModel?)
 }
 
 final class DetailTaskPresenter {
@@ -25,18 +26,6 @@ final class DetailTaskPresenter {
     var interactor: DetailTaskPresenterToInteractorProtocol?
     var router: DetailTaskPresenterToRouterProtocol?
     
-    // MARK: - private property
-    
-    private var task: TaskModel?
-    
-}
-
-// MARK: - func
-
-extension DetailTaskPresenter {
-    func configurate(task: TaskModel) {
-        self.task = task
-    }
 }
 
 // MARK: - DetailTaskViewToPresenterProtocol
@@ -44,13 +33,18 @@ extension DetailTaskPresenter {
 extension DetailTaskPresenter: DetailTaskViewToPresenterProtocol {
     func viewDidLoad() {
         view?.commonInit()
-        guard let task else { return }
-        view?.setupTask(task)
+        interactor?.fetchTask()
+    }
+    
+    func viewDidDisappear(title: String, description: String) {
+        interactor?.saveTask(title: title, description: description)
     }
 }
 
 // MARK: - DetailTaskInteractorToPresenterProtocol
 
 extension DetailTaskPresenter: DetailTaskInteractorToPresenterProtocol {
-
+    func didFetchTask(task: TaskModel?) {
+        view?.setupTask(task)
+    }
 }

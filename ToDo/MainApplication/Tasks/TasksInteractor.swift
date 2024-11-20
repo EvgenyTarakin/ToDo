@@ -12,6 +12,8 @@ import Alamofire
 
 protocol TasksPresenterToInteractorProtocol: AnyObject {
     func fetchTasks()
+    func fetchTasksAfterUpdates()
+    
     func getActualTasks() -> [TaskModel]
     func getActualTask(for index: Int) -> TaskModel
     func getCountActualDatas() -> Int
@@ -60,6 +62,10 @@ extension TasksInteractor: TasksPresenterToInteractorProtocol {
         } else {
             presenter?.didFetchTasks()
         }
+    }
+    
+    func fetchTasksAfterUpdates() {
+        presenter?.didFetchTasks()
     }
     
     func getActualTasks() -> [TaskModel] {

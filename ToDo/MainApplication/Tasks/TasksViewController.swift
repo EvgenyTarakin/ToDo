@@ -133,7 +133,7 @@ extension TasksViewController: UITableViewDataSource {
         else { return UITableViewCell() }
         cell.configurate(index: indexPath.row,
                          title: task.todo ?? "",
-                         description: task.todo ?? "",
+                         description: task.descriptions ?? "",
                          date: task.date ?? Date(),
                          isCompleted: task.completed)
         cell.delegate = self
@@ -232,6 +232,13 @@ extension TasksViewController: TasksPresenterToViewProtocol {
         tabBarController?.tabBar.addSubview(backTabBarView)
         tabBarController?.tabBar.addSubview(countLabel)
         tabBarController?.tabBar.addSubview(addNewFolderButton)
+        
+        tableView.snp.remakeConstraints {
+            $0.top.equalTo(textField.snp.bottom).inset(-16)
+            $0.left.right.equalTo(view.safeAreaLayoutGuide)
+            $0.bottom.equalToSuperview().inset(backTabBarView.frame.height)
+        }
+        view.layoutIfNeeded()
     }
     
     func updateTableView() {
@@ -246,7 +253,7 @@ extension TasksViewController: TasksPresenterToViewProtocol {
     func showTaskWithMenu(for index: Int) {
         guard let task = presenter?.getTask(for: index) else { return }
         selectTaskView.configurate(title: task.todo ?? "",
-                                   description: task.todo ?? "",
+                                   description: task.descriptions ?? "",
                                    date: task.date ?? Date())
         let frame = tableView.rectForRow(at: IndexPath(row: index, section: 0))
         selectTaskView.showSelectTaskView(frame: tableView.convert(frame, to: tableView.superview))
