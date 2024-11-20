@@ -12,7 +12,8 @@ import UIKit
 protocol TasksViewToPresenterProtocol: AnyObject {
     func getTask(for index: Int) -> Todo
     func getCountTasks() -> Int
-    func loadTasks()
+    func viewDidLoad()
+    func viewDidAppear()
     func filterTask(for text: String)
     func longPressTask(for index: Int)
     func updateTask(for index: Int)
@@ -54,8 +55,13 @@ extension TasksPresenter: TasksViewToPresenterProtocol {
         return tasks.count
     }
     
-    func loadTasks() {
+    func viewDidLoad() {
+        view?.commonInit()
         interactor?.fetchTasks()
+    }
+    
+    func viewDidAppear() {
+        view?.setupTabBar()
     }
     
     func filterTask(for text: String) {

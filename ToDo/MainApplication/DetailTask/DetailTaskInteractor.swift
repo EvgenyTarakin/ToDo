@@ -15,7 +15,7 @@ protocol DetailTaskPresenterToInteractorProtocol: AnyObject {
 
 final class DetailTaskInteractor {
     
-    weak var presenter: DetailTaskInteractorToPresenterProtocol!
+    weak var presenter: DetailTaskInteractorToPresenterProtocol?
 
 }
 

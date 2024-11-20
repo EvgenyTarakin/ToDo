@@ -11,6 +11,8 @@ import SnapKit
 // MARK: - protocols
 
 protocol TasksPresenterToViewProtocol: AnyObject {
+    func commonInit()
+    func setupTabBar()
     func updateTableView()
     func updateCell(for index: Int)
     func showTaskWithMenu(for index: Int)
@@ -76,60 +78,14 @@ final class TasksViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        commonInit()
-        presenter?.loadTasks()
+        presenter?.viewDidLoad()
     }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        setupTabBar()
+        presenter?.viewDidAppear()
     }
 
-}
-
-// MARK: - private func
-
-private extension TasksViewController {
-    func commonInit() {
-        title = "Задачи"
-        
-        view.backgroundColor = Color.black
-        
-        view.addGestureRecognizer(tap)
-        view.addSubview(textField)
-        view.addSubview(tableView)
-        
-        textField.snp.makeConstraints {
-            $0.top.equalTo(view.safeAreaLayoutGuide)
-            $0.left.right.equalTo(view.safeAreaLayoutGuide).inset(20)
-            $0.height.equalTo(36)
-        }
-        tableView.snp.makeConstraints {
-            $0.top.equalTo(textField.snp.bottom).inset(-16)
-            $0.bottom.left.right.equalTo(view.safeAreaLayoutGuide)
-        }
-        
-        tabBarController?.view.addSubview(selectTaskView)
-        
-        selectTaskView.snp.makeConstraints {
-            $0.top.bottom.left.right.equalToSuperview()
-        }
-    }
-
-    private func setupTabBar() {
-        tabBarController?.tabBar.isHidden = false
-        tabBarController?.tabBar.subviews.forEach {
-            $0.removeFromSuperview()
-        }
-        
-        let backTabBarView = UIView()
-        backTabBarView.frame = tabBarController?.tabBar.bounds ?? CGRect.zero
-        backTabBarView.setBlurEffect()
-        
-        tabBarController?.tabBar.addSubview(backTabBarView)
-        tabBarController?.tabBar.addSubview(countLabel)
-        tabBarController?.tabBar.addSubview(addNewFolderButton)
-    }
 }
 
 // MARK: - obj-c
@@ -139,6 +95,8 @@ private extension TasksViewController {
         textField.resignFirstResponder()
     }
 }
+
+// MARK: - UITextFieldDelegate
 
 extension TasksViewController: UITextFieldDelegate {
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
@@ -234,6 +192,47 @@ extension TasksViewController: TasksRouterToViewProtocol {
 // MARK: - TasksPresenterToViewProtocol
 
 extension TasksViewController: TasksPresenterToViewProtocol {
+    func commonInit() {
+        title = "Задачи"
+        
+        view.backgroundColor = Color.black
+        
+        view.addGestureRecognizer(tap)
+        view.addSubview(textField)
+        view.addSubview(tableView)
+        
+        textField.snp.makeConstraints {
+            $0.top.equalTo(view.safeAreaLayoutGuide)
+            $0.left.right.equalTo(view.safeAreaLayoutGuide).inset(20)
+            $0.height.equalTo(36)
+        }
+        tableView.snp.makeConstraints {
+            $0.top.equalTo(textField.snp.bottom).inset(-16)
+            $0.bottom.left.right.equalTo(view.safeAreaLayoutGuide)
+        }
+        
+        tabBarController?.view.addSubview(selectTaskView)
+        
+        selectTaskView.snp.makeConstraints {
+            $0.top.bottom.left.right.equalToSuperview()
+        }
+    }
+    
+    func setupTabBar() {
+        tabBarController?.tabBar.isHidden = false
+        tabBarController?.tabBar.subviews.forEach {
+            $0.removeFromSuperview()
+        }
+        
+        let backTabBarView = UIView()
+        backTabBarView.frame = tabBarController?.tabBar.bounds ?? CGRect.zero
+        backTabBarView.setBlurEffect()
+        
+        tabBarController?.tabBar.addSubview(backTabBarView)
+        tabBarController?.tabBar.addSubview(countLabel)
+        tabBarController?.tabBar.addSubview(addNewFolderButton)
+    }
+    
     func updateTableView() {
         countLabel.configurate(presenter?.getCountTasks() ?? 0)
         tableView.reloadData()

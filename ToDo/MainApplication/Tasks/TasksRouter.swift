@@ -29,7 +29,7 @@ extension TasksRouter: TasksPresenterToRouterProtocol {
     }
     
     func openDetail(for task: Todo) {
-        let controller = DetailTaskConfigurator().configurate()
+        let controller = DetailTaskConfigurator().configurate(task: task)
         view?.navgate(to: controller)
     }
 }
