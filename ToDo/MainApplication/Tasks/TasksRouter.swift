@@ -11,7 +11,7 @@ import UIKit
 
 protocol TasksPresenterToRouterProtocol: AnyObject {
     func openNewTask()
-    func openDetail(for task: Todo)
+    func openDetail(for task: TaskModel)
 }
 
 final class TasksRouter {
@@ -28,7 +28,7 @@ extension TasksRouter: TasksPresenterToRouterProtocol {
         view?.navgate(to: controller)
     }
     
-    func openDetail(for task: Todo) {
+    func openDetail(for task: TaskModel) {
         let controller = DetailTaskConfigurator().configurate(task: task)
         view?.navgate(to: controller)
     }

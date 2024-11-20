@@ -12,7 +12,7 @@ import SnapKit
 
 protocol DetailTaskPresenterToViewProtocol: AnyObject {
     func commonInit()
-    func setupTask(_ task: Todo)
+    func setupTask(_ task: TaskModel)
 }
 
 protocol DetailTaskRouterToViewProtocol: AnyObject {
@@ -122,10 +122,10 @@ extension DetailTaskViewController: DetailTaskPresenterToViewProtocol {
         }
     }
     
-    func setupTask(_ task: Todo) {
+    func setupTask(_ task: TaskModel) {
         commonInit()
         textField.text = task.todo
-        dateLabel.text = task.date.getStringDate()
+        dateLabel.text = task.date?.getStringDate()
         textView.text = task.todo
     }
 }

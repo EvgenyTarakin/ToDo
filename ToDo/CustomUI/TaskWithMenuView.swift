@@ -1,5 +1,5 @@
 //
-//  SelectTaskView.swift
+//  TaskWithMenuView.swift
 //  ToDo
 //
 //  Created by Евгений Таракин on 15.11.2024.
@@ -10,17 +10,17 @@ import SnapKit
 
 // MARK: - protocol
 
-protocol SelectTaskViewDelegate: AnyObject {
+protocol TaskWithMenuViewDelegate: AnyObject {
     func didSelectEditButton()
     func didSelectShareButton()
     func didSelectDeleteButton()
 }
 
-final class SelectTaskView: UIView {
+final class TaskWithMenuView: UIView {
     
     // MARK: - property
     
-    weak var delegate: SelectTaskViewDelegate?
+    weak var delegate: TaskWithMenuViewDelegate?
     
     // MARK: - private property
     
@@ -160,7 +160,7 @@ final class SelectTaskView: UIView {
 
 // MARK: - func
 
-extension SelectTaskView {
+extension TaskWithMenuView {
     func configurate(title: String, description: String, date: Date) {
         titleTaskLabel.text = title
         descriptionTaskLabel.text = description
@@ -181,7 +181,7 @@ extension SelectTaskView {
 
 // MARK: - private func
 
-private extension SelectTaskView {
+private extension TaskWithMenuView {
     func commonInit() {
         setBlurEffect()
         isHidden = true
@@ -209,7 +209,7 @@ private extension SelectTaskView {
 
 // MARK: - obj-c
 
-@objc private extension SelectTaskView {
+@objc private extension TaskWithMenuView {
     func hideEditView() {
         buttonsBackView.isHidden = true
         isAnimated = false
@@ -223,12 +223,12 @@ private extension SelectTaskView {
 
 // MARK: - MenuButtonDelegate
 
-extension SelectTaskView: MenuButtonDelegate {
+extension TaskWithMenuView: MenuButtonDelegate {
     func didSelectButton(type: MenuButtonType) {
         buttonsBackView.isHidden = true
         isAnimated = false
         UIView.animate(withDuration: 0.15, animations: {
-            self.backView.frame.origin.y = self.startFrame?.origin.y ?? 0
+            self.backView.frame.origin.y = 1000
         }, completion: { _ in
             self.isHidden = true
             

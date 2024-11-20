@@ -9,7 +9,7 @@ import UIKit
 
 final class DetailTaskConfigurator {
     
-    func configurate(task: Todo = Todo(id: 30, todo: "Новая задача", completed: false, userID: 0, date: Date())) -> UIViewController {
+    func configurate(task: TaskModel = TaskModel()) -> UIViewController {
         let view = DetailTaskViewController()
         let presenter = DetailTaskPresenter()
         let interactor = DetailTaskInteractor()

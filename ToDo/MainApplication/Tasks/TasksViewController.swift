@@ -16,7 +16,6 @@ protocol TasksPresenterToViewProtocol: AnyObject {
     func updateTableView()
     func updateCell(for index: Int)
     func showTaskWithMenu(for index: Int)
-    func deleteWithAnimatecell(for index: Int)
 }
 
 protocol TasksRouterToViewProtocol: AnyObject {
@@ -28,6 +27,8 @@ final class TasksViewController: UIViewController {
     // MARK: - property
     
     var presenter: TasksViewToPresenterProtocol?
+    
+    // MARK: - private property
     
     private lazy var tap = UITapGestureRecognizer(target: self, action: #selector(tapOnView))
     
@@ -66,8 +67,8 @@ final class TasksViewController: UIViewController {
         return button
     }()
     
-    private lazy var selectTaskView: SelectTaskView = {
-        let selectTaskView = SelectTaskView()
+    private lazy var selectTaskView: TaskWithMenuView = {
+        let selectTaskView = TaskWithMenuView()
         selectTaskView.isHidden = true
         selectTaskView.delegate = self
         
@@ -109,7 +110,7 @@ extension TasksViewController: UITextFieldDelegate {
         if string.isEmpty {
             searchText.removeLast()
         }
-        presenter?.filterTask(for: searchText)
+        presenter?.searchTasks(for: searchText)
         
         return true
     }
@@ -131,9 +132,9 @@ extension TasksViewController: UITableViewDataSource {
               let task = presenter?.getTask(for: indexPath.row)
         else { return UITableViewCell() }
         cell.configurate(index: indexPath.row,
-                         title: task.todo,
-                         description: task.todo,
-                         date: task.date,
+                         title: task.todo ?? "",
+                         description: task.todo ?? "",
+                         date: task.date ?? Date(),
                          isCompleted: task.completed)
         cell.delegate = self
         
@@ -167,9 +168,9 @@ extension TasksViewController: ButtonDelegate {
 
 // MARK: - SelectTaskViewDelegate
 
-extension TasksViewController: SelectTaskViewDelegate {
+extension TasksViewController: TaskWithMenuViewDelegate {
     func didSelectEditButton() {
-        presenter?.editTask()
+        presenter?.tapEditTask()
     }
     
     func didSelectShareButton() {
@@ -177,7 +178,7 @@ extension TasksViewController: SelectTaskViewDelegate {
     }
     
     func didSelectDeleteButton() {
-        presenter?.deleteTask()
+        presenter?.tapDeleteTask()
     }
 }
 
@@ -244,15 +245,10 @@ extension TasksViewController: TasksPresenterToViewProtocol {
     
     func showTaskWithMenu(for index: Int) {
         guard let task = presenter?.getTask(for: index) else { return }
-        selectTaskView.configurate(title: task.todo, description: task.todo, date: task.date)
+        selectTaskView.configurate(title: task.todo ?? "",
+                                   description: task.todo ?? "",
+                                   date: task.date ?? Date())
         let frame = tableView.rectForRow(at: IndexPath(row: index, section: 0))
         selectTaskView.showSelectTaskView(frame: tableView.convert(frame, to: tableView.superview))
-    }
-    
-    func deleteWithAnimatecell(for index: Int) {
-        tableView.beginUpdates()
-        tableView.deleteRows(at: [IndexPath(row: index, section: 0)], with: .left)
-        tableView.endUpdates()
-        updateTableView()
     }
 }

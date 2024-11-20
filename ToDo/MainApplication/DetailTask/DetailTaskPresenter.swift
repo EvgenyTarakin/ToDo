@@ -27,14 +27,14 @@ final class DetailTaskPresenter {
     
     // MARK: - private property
     
-    private var task: Todo?
+    private var task: TaskModel?
     
 }
 
 // MARK: - func
 
 extension DetailTaskPresenter {
-    func configurate(task: Todo) {
+    func configurate(task: TaskModel) {
         self.task = task
     }
 }
