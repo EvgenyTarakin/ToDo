@@ -11,14 +11,15 @@ import SnapKit
 // MARK: - protocols
 
 protocol TasksPresenterToViewProtocol: AnyObject {
+    func commonInit()
+    func setupTabBar()
     func updateTableView()
     func updateCell(for index: Int)
     func showTaskWithMenu(for index: Int)
-    func deleteWithAnimatecell(for index: Int)
 }
 
 protocol TasksRouterToViewProtocol: AnyObject {
-    
+    func navgate(to controller: UIViewController)
 }
 
 final class TasksViewController: UIViewController {
@@ -26,6 +27,8 @@ final class TasksViewController: UIViewController {
     // MARK: - property
     
     var presenter: TasksViewToPresenterProtocol?
+    
+    // MARK: - private property
     
     private lazy var tap = UITapGestureRecognizer(target: self, action: #selector(tapOnView))
     
@@ -64,8 +67,8 @@ final class TasksViewController: UIViewController {
         return button
     }()
     
-    private lazy var selectTaskView: SelectTaskView = {
-        let selectTaskView = SelectTaskView()
+    private lazy var selectTaskView: TaskWithMenuView = {
+        let selectTaskView = TaskWithMenuView()
         selectTaskView.isHidden = true
         selectTaskView.delegate = self
         
@@ -76,27 +79,127 @@ final class TasksViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        commonInit()
-        presenter?.loadTasks()
+        presenter?.viewDidLoad()
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        presenter?.viewDidAppear()
     }
 
 }
 
-// MARK: - private func
+// MARK: - obj-c
 
-private extension TasksViewController {
+@objc private extension TasksViewController {
+    func tapOnView() {
+        textField.resignFirstResponder()
+    }
+}
+
+// MARK: - UITextFieldDelegate
+
+extension TasksViewController: UITextFieldDelegate {
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        textField.resignFirstResponder()
+        return true
+    }
+    
+    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+        var searchText = (textField.text ?? "") + string
+        if string.isEmpty {
+            searchText.removeLast()
+        }
+        presenter?.searchTasks(for: searchText)
+        
+        return true
+    }
+}
+
+// MARK: - UITableViewDelegate
+
+extension TasksViewController: UITableViewDelegate {}
+
+// MARK: - UITableViewDataSource
+
+extension TasksViewController: UITableViewDataSource {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return presenter?.getCountTasks() ?? 0
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: TaskCell.reuseIdentifier, for: indexPath) as? TaskCell,
+              let task = presenter?.getTask(for: indexPath.row)
+        else { return UITableViewCell() }
+        cell.configurate(index: indexPath.row,
+                         title: task.todo ?? "",
+                         description: task.descriptions ?? "",
+                         date: task.date ?? Date(),
+                         isCompleted: task.completed)
+        cell.delegate = self
+        
+        return cell
+    }
+}
+
+// MARK: - TaskCellDelegate
+
+extension TasksViewController: TaskCellDelegate {
+    func didTapCell(index: Int) {
+        view.endEditing(true)
+        presenter?.didSelectCell(for: index)
+    }
+    
+    func didTapCheckButton(index: Int) {
+        view.endEditing(true)
+        presenter?.updateTask(for: index)
+    }
+    
+    func didLongPressCell(index: Int) {
+        view.endEditing(true)
+        presenter?.longPressTask(for: index)
+    }
+}
+
+// MARK: - ButtonDelegate
+
+extension TasksViewController: ButtonDelegate {
+    func didSelectButton() {
+        presenter?.addTask()
+    }
+}
+
+// MARK: - SelectTaskViewDelegate
+
+extension TasksViewController: TaskWithMenuViewDelegate {
+    func didSelectEditButton() {
+        presenter?.tapEditTask()
+    }
+    
+    func didSelectShareButton() {
+        
+    }
+    
+    func didSelectDeleteButton() {
+        presenter?.tapDeleteTask()
+    }
+}
+
+// MARK: - TasksRouterToViewProtocol
+
+extension TasksViewController: TasksRouterToViewProtocol {
+    func navgate(to controller: UIViewController) {
+        navigationController?.pushViewController(controller, animated: true)
+    }
+}
+
+// MARK: - TasksPresenterToViewProtocol
+
+extension TasksViewController: TasksPresenterToViewProtocol {
     func commonInit() {
         title = "Задачи"
         
         view.backgroundColor = Color.black
-        
-        tabBarController?.tabBar.isHidden = false
-        tabBarController?.tabBar.subviews.forEach {
-            $0.removeFromSuperview()
-        }
-
-        tabBarController?.tabBar.addSubview(countLabel)
-        tabBarController?.tabBar.addSubview(addNewFolderButton)
         
         view.addGestureRecognizer(tap)
         view.addSubview(textField)
@@ -118,108 +221,29 @@ private extension TasksViewController {
             $0.top.bottom.left.right.equalToSuperview()
         }
     }
-
-}
-
-// MARK: - obj-c
-
-@objc private extension TasksViewController {
-    func tapOnView() {
-        textField.resignFirstResponder()
-    }
-}
-
-extension TasksViewController: UITextFieldDelegate {
-    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        textField.resignFirstResponder()
-        return true
-    }
     
-    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-        var searchText = (textField.text ?? "") + string
-        if string.isEmpty {
-            searchText.removeLast()
+    func setupTabBar() {
+        tabBarController?.tabBar.isHidden = false
+        tabBarController?.tabBar.subviews.forEach {
+            $0.removeFromSuperview()
         }
-        presenter?.filterTask(for: searchText)
         
-        return true
-    }
-}
-
-// MARK: - UITableViewDelegate
-
-extension TasksViewController: UITableViewDelegate {
-    
-}
-
-// MARK: - UITableViewDataSource
-
-extension TasksViewController: UITableViewDataSource {
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return presenter?.getCountTasks() ?? 0
-    }
-    
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: TaskCell.reuseIdentifier, for: indexPath) as? TaskCell,
-              let task = presenter?.getTask(for: indexPath.row)
-        else { return UITableViewCell() }
-        cell.configurate(index: indexPath.row,
-                         title: task.todo,
-                         description: task.todo,
-                         date: task.date,
-                         isCompleted: task.completed)
-        cell.delegate = self
+        let backTabBarView = UIView()
+        backTabBarView.frame = tabBarController?.tabBar.bounds ?? CGRect.zero
+        backTabBarView.setBlurEffect()
         
-        return cell
-    }
-}
-
-// MARK: - TaskCellDelegate
-
-extension TasksViewController: TaskCellDelegate {
-    func didTapCheckButton(index: Int) {
-        presenter?.updateTask(for: index)
-    }
-    
-    func didLongPressCell(index: Int) {
-        presenter?.longPressTask(for: index)
-    }
-}
-
-// MARK: - ButtonDelegate
-
-extension TasksViewController: ButtonDelegate {
-    func didSelectButton() {
-        let controller = DetailTaskViewController()
-        navigationController?.pushViewController(controller, animated: true)
-    }
-}
-
-// MARK: - SelectTaskViewDelegate
-
-extension TasksViewController: SelectTaskViewDelegate {
-    func didSelectEditButton() {
+        tabBarController?.tabBar.addSubview(backTabBarView)
+        tabBarController?.tabBar.addSubview(countLabel)
+        tabBarController?.tabBar.addSubview(addNewFolderButton)
         
+        tableView.snp.remakeConstraints {
+            $0.top.equalTo(textField.snp.bottom).inset(-16)
+            $0.left.right.equalTo(view.safeAreaLayoutGuide)
+            $0.bottom.equalToSuperview().inset(backTabBarView.frame.height)
+        }
+        view.layoutIfNeeded()
     }
     
-    func didSelectShareButton() {
-        
-    }
-    
-    func didSelectDeleteButton() {
-        presenter?.deleteTask()
-    }
-}
-
-// MARK: - TasksRouterToViewProtocol
-
-extension TasksViewController: TasksRouterToViewProtocol {
-
-}
-
-// MARK: - TasksPresenterToViewProtocol
-
-extension TasksViewController: TasksPresenterToViewProtocol {
     func updateTableView() {
         countLabel.configurate(presenter?.getCountTasks() ?? 0)
         tableView.reloadData()
@@ -231,15 +255,10 @@ extension TasksViewController: TasksPresenterToViewProtocol {
     
     func showTaskWithMenu(for index: Int) {
         guard let task = presenter?.getTask(for: index) else { return }
-        selectTaskView.configurate(title: task.todo, description: task.todo, date: task.date)
+        selectTaskView.configurate(title: task.todo ?? "",
+                                   description: task.descriptions ?? "",
+                                   date: task.date ?? Date())
         let frame = tableView.rectForRow(at: IndexPath(row: index, section: 0))
         selectTaskView.showSelectTaskView(frame: tableView.convert(frame, to: tableView.superview))
-    }
-    
-    func deleteWithAnimatecell(for index: Int) {
-        tableView.beginUpdates()
-        tableView.deleteRows(at: [IndexPath(row: index, section: 0)], with: .left)
-        tableView.endUpdates()
-        updateTableView()
     }
 }

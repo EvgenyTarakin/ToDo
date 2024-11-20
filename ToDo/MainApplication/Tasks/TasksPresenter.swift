@@ -10,20 +10,24 @@ import UIKit
 // MARK: - protocols
 
 protocol TasksViewToPresenterProtocol: AnyObject {
-    func getTask(for index: Int) -> Todo
+    func getTask(for index: Int) -> TaskModel
     func getCountTasks() -> Int
-    func loadTasks()
-    func filterTask(for text: String)
+    func viewDidLoad()
+    func viewDidAppear()
+    func searchTasks(for text: String)
     func longPressTask(for index: Int)
     func updateTask(for index: Int)
-    func deleteTask()
+    func didSelectCell(for index: Int)
+    func tapEditTask()
+    func tapDeleteTask()
+    func addTask()
 }
 
 protocol TasksInteractorToPresenterProtocol: AnyObject {
-    func didFetchTasks(_ tasks: [Todo])
+    func didFetchTasks()
 }
 
-class TasksPresenter {
+final class TasksPresenter {
     
     // MARK: - property
     
@@ -33,33 +37,33 @@ class TasksPresenter {
     
     // MARK: - private property
     
-    private var tasks: [Todo] = []
-    private var tasksCopy: [Todo] = []
-    
     private var selectedIndex = 0
     
 }
 
+// MARK: - TasksViewToPresenterProtocol
+
 extension TasksPresenter: TasksViewToPresenterProtocol {
-    func getTask(for index: Int) -> Todo {
-        return tasks[index] 
+    func getTask(for index: Int) -> TaskModel {
+        return interactor?.getActualTask(for: index) ?? TaskModel()
     }
     
     func getCountTasks() -> Int {
-        return tasks.count
+        return interactor?.getCountActualDatas() ?? 0
     }
     
-    func loadTasks() {
+    func viewDidLoad() {
+        view?.commonInit()
         interactor?.fetchTasks()
     }
     
-    func filterTask(for text: String) {
-        if text.isEmpty {
-            tasks = tasksCopy
-        } else {
-            tasks = tasks.filter { $0.todo.contains(text) }
-        }
-        view?.updateTableView()
+    func viewDidAppear() {
+        view?.setupTabBar()
+        interactor?.fetchTasksAfterUpdates()
+    }
+    
+    func searchTasks(for text: String) {
+        interactor?.filterTasks(by: text)
     }
     
     func longPressTask(for index: Int) {
@@ -68,25 +72,30 @@ extension TasksPresenter: TasksViewToPresenterProtocol {
     }
     
     func updateTask(for index: Int) {
-        tasks[index].completed.toggle()
-        for i in tasksCopy.indices {
-            if tasksCopy[i].id == tasks[index].id {
-                tasksCopy[i].completed.toggle()
-            }
-        }
-        view?.updateCell(for: index)
+        interactor?.updateTask(for: index)
     }
     
-    func deleteTask() {
-        tasks.remove(at: selectedIndex)
-        view?.deleteWithAnimatecell(for: selectedIndex)
+    func didSelectCell(for index: Int) {
+        router?.openDetail(for: getTask(for: index), index: index)
+    }
+    
+    func addTask() {
+        router?.openNewTask(index: getCountTasks())
+    }
+    
+    func tapEditTask() {
+        router?.openDetail(for: getTask(for: selectedIndex), index: selectedIndex)
+    }
+    
+    func tapDeleteTask() {
+        interactor?.deleteTaskFromData(index: selectedIndex)
     }
 }
 
+// MARK: - TasksInteractorToPresenterProtocol
+
 extension TasksPresenter: TasksInteractorToPresenterProtocol {
-    func didFetchTasks(_ tasks: [Todo]) {
-        self.tasks = tasks
-        tasksCopy = tasks
+    func didFetchTasks() {
         view?.updateTableView()
     }
 }

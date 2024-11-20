@@ -7,9 +7,9 @@
 
 import UIKit
 
-class DetailTaskConfigurator {
+final class DetailTaskConfigurator {
     
-    func configurate() -> UIViewController {
+    func configurate(index: Int, task: TaskModel?) -> UIViewController {
         let view = DetailTaskViewController()
         let presenter = DetailTaskPresenter()
         let interactor = DetailTaskInteractor()
@@ -21,6 +21,8 @@ class DetailTaskConfigurator {
         presenter.router = router
         interactor.presenter = presenter
         router.view = view
+        
+        interactor.configurate(index: index, task: task)
         
         return view
     }
